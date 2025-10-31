@@ -1,0 +1,36 @@
+Initial commit: Benedict Movies Android App
+
+Features:
+- Clean Architecture implementation with MVVM pattern
+- Movie list screen with grid/list view toggle
+- Movie detail screen with comprehensive information
+- Similar movies feature with recursive navigation
+- Retry mechanism for error handling on all screens
+- Jetpack Compose UI with Material Design 3
+- Dark/Light theme support
+- Hilt dependency injection
+- Retrofit networking with TMDB API
+- Comprehensive unit tests (23 test cases)
+- StateFlow for reactive state management
+
+Tech Stack:
+- Kotlin, Jetpack Compose, Material Design 3
+- Clean Architecture (Domain, Data, Presentation layers)
+- MVVM with StateFlow
+- Hilt for DI
+- Retrofit + OkHttp + Gson
+- Coil for image loading
+- Coroutines + Flow
+- JUnit, MockK, Truth for testing
+
+Architecture:
+- Domain layer: Pure Kotlin business logic with use cases
+- Data layer: Repository pattern with API integration
+- Presentation layer: Compose screens with ViewModels
+
+Testing:
+- 23 unit tests covering ViewModels, Use Cases, and Repositories
+- Retry functionality tests
+- Similar movies feature tests
+- Error handling and state management tests
+
