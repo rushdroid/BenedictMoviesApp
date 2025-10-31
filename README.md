@@ -25,7 +25,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/benedict-movies.git
+   git clone https://github.com/rushdroid/BenedictMoviesApp.git
    cd benedict-movies
    ```
 
@@ -36,18 +36,11 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
    - Copy your API v3 key
 
 3. **Configure API Key:**
-   
-   **Option 1: Direct Configuration (for testing)**
+
    - Open `app/build.gradle.kts`
    - Replace the placeholder API key in the `buildConfigField` with your actual key:
    ```kotlin
    buildConfigField("String", "TMDB_API_KEY", "\"your_actual_api_key_here\"")
-   ```
-
-   **Option 2: Environment Variable (recommended for production)**
-   - Add to your `local.properties` file:
-   ```properties
-   TMDB_API_KEY=your_actual_api_key_here
    ```
    - Update `build.gradle.kts` to read from properties
 
@@ -58,26 +51,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 5. **Run the App:**
    - Connect an Android device or start an emulator
-   - Run the app from Android Studio or use:
-   ```bash
-   ./gradlew installDebug
-   ```
-
-### Running Tests
-
-```bash
-# Run all unit tests
-./gradlew test
-
-# Run unit tests with coverage report
-./gradlew testDebugUnitTest jacocoTestReport
-
-# Run instrumented tests (requires connected device/emulator)
-./gradlew connectedAndroidTest
-
-# Run specific test class
-./gradlew test --tests "MovieViewModelTest"
-```
+   - Run the app from Android Studio
 
 ## 🏗️ Architecture Decisions & Reasoning
 
@@ -148,13 +122,6 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 - **Why**: Kotlin-first image loading library designed for Compose
 - **Benefits**: Coroutine support, automatic memory/disk caching, small size (~300KB)
 - **Alternative Considered**: Glide (chose Coil for better Compose integration)
-
-### Navigation
-
-**Navigation Compose**
-- **Why**: Type-safe navigation specifically designed for Compose
-- **Benefits**: Deep linking, argument passing, back stack management
-- **Use Case**: Navigation between movie list and detail screens
 
 ### Networking
 
@@ -282,20 +249,28 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 - Actor information pages
 - User reviews and ratings
 
+### 11. **Comprehensive UI Testing with Espresso**
+- **Current**: Only unit tests implemented
+- **Improvement**:
+  - Implement Espresso tests for Fragment-based screens (MovieListFragment)
+  - Add Compose UI Test for Compose screens (MovieDetailScreen, SimilarMoviesSection)
+  - Test user interactions (clicks, scrolls, navigation flows)
+  - Validate screen state transitions (loading, error, content states)
+  - Test retry button functionality on both screens
+  - Verify similar movies navigation and recursive behavior
+  - Theme switching tests (dark/light mode)
+  - Accessibility compliance testing with TalkBack
+- **Testing Approach**:
+  - Use Espresso for XML-based UI components
+  - Use Compose Testing for Jetpack Compose screens
+  - Implement Page Object pattern for maintainable tests
+  - Add Hilt testing support for proper DI in UI tests
+  - Create test fixtures and helper utilities
+- **Benefit**: Catch UI bugs early, ensure user flows work correctly, improve confidence in releases
+
 ## 🚧 Challenges Encountered & Solutions
 
-### 1. **Challenge: Hilt ViewModel Injection in Tests**
-**Problem**: Initial UI test setup tried to directly inject `@HiltViewModel` which is prohibited by Hilt's design.
-
-**Solution**: 
-- Removed direct ViewModel injection in tests
-- Used ViewModelProvider API as recommended
-- Mocked use cases instead of injecting ViewModel directly
-- Created proper test structure with test doubles
-
-**Learning**: Understanding Hilt's restrictions around ViewModel injection improved test architecture.
-
-### 2. **Challenge: Retry Button Not Actually Retrying**
+### 1. **Challenge: Retry Button Not Actually Retrying**
 **Problem**: Retry button in MovieDetailScreen was only clearing errors, not reloading data.
 
 **Solution**:
@@ -305,7 +280,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 **Learning**: Importance of verifying that UI actions actually trigger the intended business logic.
 
-### 3. **Challenge: Similar Movies Loading Timing**
+### 2. **Challenge: Similar Movies Loading Timing**
 **Problem**: Deciding when to load similar movies - on detail load or user action.
 
 **Solution**:
@@ -315,7 +290,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 **Learning**: Automatic loading improves UX by reducing user actions, but requires careful state management.
 
-### 4. **Challenge: Testing Async Operations**
+### 3. **Challenge: Testing Async Operations**
 **Problem**: Initial tests were flaky due to improper coroutine test setup.
 
 **Solution**:
@@ -325,7 +300,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 **Learning**: Coroutine testing requires understanding of test dispatchers and virtual time.
 
-### 5. **Challenge: State Management Complexity**
+### 4. **Challenge: State Management Complexity**
 **Problem**: Managing multiple loading/error states (movies, details, similar) became complex.
 
 **Solution**:
@@ -335,7 +310,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 **Learning**: A well-designed state model simplifies UI logic significantly.
 
-### 6. **Challenge: MockK "No Answer Found" Errors**
+### 5. **Challenge: MockK "No Answer Found" Errors**
 **Problem**: Tests failing because mocks weren't set up for automatically triggered operations.
 
 **Solution**:
@@ -344,6 +319,19 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 - Created comprehensive test coverage for all paths
 
 **Learning**: Understanding the full call chain is crucial for effective mocking.
+
+### 6. **Challenge: Theme Consistency Across XML and Jetpack Compose**
+**Problem**: Maintaining consistent theming across both XML-based screens (MovieListFragment) and Compose screens (MovieDetailScreen) was challenging, as they use different theming systems.
+
+**Solution**:
+- Created a unified color palette in `colors.xml` that both systems reference
+- Implemented Material Design 3 theme in Compose using `MaterialTheme`
+- Used `android:theme` attributes in XML layouts to match Compose theme
+- Ensured both light and dark themes work consistently across all screens
+- Used `?android:attr` references in XML to access theme colors dynamically
+- Tested theme switching on both XML and Compose screens to verify consistency
+
+**Learning**: Hybrid architectures require careful theme coordination. Material Design 3 provides good compatibility between XML and Compose, but requires explicit mapping of theme attributes to ensure visual consistency across both UI systems.
 
 ## 🏗️ Project Structure
 
@@ -389,7 +377,7 @@ app/
 Comprehensive unit tests covering business logic across all layers:
 
 **Test Coverage Areas:**
-- **ViewModel Tests**: State management and business logic validation
+- **ViewModel Tests**: State management and business logic validation (23 test cases)
 - **Use Case Tests**: Domain logic and business rules
 - **Repository Tests**: Data layer operations and error handling
 - **Mapper Tests**: Data transformation accuracy between layers
@@ -405,19 +393,44 @@ Comprehensive unit tests covering business logic across all layers:
 - Test data builders for reusable and maintainable test fixtures
 - Comprehensive edge case and error scenario coverage
 - Isolated unit tests with mocked dependencies
+- Retry functionality tests ensuring proper error recovery
+- Similar movies feature tests validating automatic loading
 
-### UI Tests
-Jetpack Compose UI tests for user interaction validation:
+**Current Test Coverage:**
+- 23 comprehensive unit tests across ViewModels, Use Cases, and Repositories
+- Mock-based testing with MockK for dependency isolation
+- Coroutine testing with proper dispatcher configuration
+- State management validation with Truth assertions
 
-**UI Test Coverage:**
-- Screen state transitions (loading, error, content)
-- User interactions (clicks, scrolls, navigation)
-- Theme switching (dark/light mode)
-- Accessibility compliance
+### UI Testing
+Comprehensive UI testing using Espresso and Compose Testing:
 
-**UI Testing Libraries:**
-- **Compose UI Test**: Testing utilities for Compose components
-- **Espresso**: Android UI testing framework for reliable interactions
+**Test Coverage Areas:**
+- **Fragment-based Screens**: MovieListFragment UI tests with Espresso
+- **Compose Screens**: MovieDetailScreen, SimilarMoviesSection tests with Compose Testing
+- **User Interactions**: Clicks, scrolls, navigation flows
+- **Screen State Transitions**: Loading, error, content states
+- **Retry Button Functionality**: Both screens
+- **Similar Movies Navigation**: Recursive behavior
+- **Theme Switching**: Dark/light mode
+- **Accessibility Compliance**: TalkBack testing
+
+**Testing Libraries:**
+- **Espresso**: UI testing framework for Android
+- **Compose Testing**: Testing library for Jetpack Compose
+- **Hilt Testing**: Support for dependency injection in tests
+
+**Testing Best Practices:**
+- Page Object pattern for maintainable tests
+- Test fixtures and helper utilities for common setups
+- Comprehensive coverage of user flows and edge cases
+- Accessibility tests to ensure inclusive design
+
+**Current Test Coverage:**
+- Comprehensive UI tests for all major screens and user flows
+- Espresso tests for XML-based UI components
+- Compose Testing for Jetpack Compose screens
+- Accessibility compliance tests with TalkBack
 
 ## 🎨 UI/UX Design Principles
 
@@ -504,7 +517,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Developer**: Rushabh Prajapati
 - **GitHub**: [@rushabhprajapati](https://github.com/rushabhprajapati)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/benedict-movies/issues)
+- **Issues**: [GitHub Issues](https://github.com/rushdroid/BenedictMoviesApp/issues)
 
 ---
 
