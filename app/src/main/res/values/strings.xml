@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Benedict Movies</string>
+
+    <!-- Screen Titles -->
+    <string name="movie_list_title">Benedict Cumberbatch Movies</string>
+    <string name="movie_detail_title">Movie Detail</string>
+
+    <!-- UI Labels -->
+    <string name="star_rating">⭐</string>
+    <string name="back_button">Back</string>
+    <string name="toggle_view_grid_to_list">Switch to list view</string>
+    <string name="toggle_view_list_to_grid">Switch to grid view</string>
+    <string name="toggle_view_default">Toggle view</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="movie_backdrop">Movie backdrop</string>
+
+    <!-- Movie Detail Labels -->
+    <string name="rating_label">Rating</string>
+    <string name="release_date_label">Release Date: %1$s</string>
+    <string name="runtime_label">%1$d min</string>
+    <string name="genres_label">Genres</string>
+    <string name="overview_label">Overview</string>
+    <string name="box_office_label">Box Office</string>
+    <string name="budget_label">Budget: $%1$s</string>
+    <string name="revenue_label">Revenue: $%1$s</string>
+    <string name="votes_count">(%1$d votes)</string>
+
+    <!-- Actions -->
+    <string name="retry_button">Retry</string>
+    <string name="refresh">Refresh</string>
+
+    <!-- Placeholders -->
+    <string name="unknown_year">Unknown</string>
+    <string name="loading">Loading...</string>
+
+    <!-- Error Messages -->
+    <string name="error_loading_movies">Failed to load movies. Please try again.</string>
+    <string name="error_no_internet_connection">No internet connection available</string>
+    <string name="error_network_timeout">Network request timed out</string>
+    <string name="error_network_general">Network error occurred</string>
+    <string name="error_invalid_api_key">Invalid API key</string>
+    <string name="error_resource_not_found">Resource not found</string>
+    <string name="error_too_many_requests">Too many requests. Please try again later</string>
+    <string name="error_server_error">Server error occurred</string>
+    <string name="error_http_general">HTTP error: %1$d</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_prefix">Error: %1$s</string>
+</resources>

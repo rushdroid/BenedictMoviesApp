@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/movieListFragment">
+
+    <fragment
+        android:id="@+id/movieListFragment"
+        android:name="com.rushdroid.benedictmovies.presentation.ui.fragment.MovieListFragment"
+        android:label="Benedict Cumberbatch Movies">
+
+        <action
+            android:id="@+id/action_movieListFragment_to_movieDetailActivity"
+            android:name="com.rushdroid.rushabhtelus.presentation.ui.activity.MovieDetailActivity">
+            <argument
+                android:name="movieId"
+                app:argType="integer" />
+            <argument
+                android:name="movieTitle"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+</navigation>
