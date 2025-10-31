@@ -380,9 +380,11 @@ Comprehensive unit tests covering business logic across all layers:
 - **Use Case Tests**: Domain logic and business rules
 - **Repository Tests**: Data layer operations and error handling
 - **Mapper Tests**: Data transformation accuracy between layers
+- **Utility Tests**: Date formatting, currency formatting, error handling, and image utilities
 
 **Testing Libraries:**
 - **MockK**: Kotlin-friendly mocking framework for creating test doubles
+- **Mockito**: Traditional mocking framework for Java interop tests
 - **Truth**: Fluent assertion library for readable test code
 - **Coroutines Test**: Testing utilities for asynchronous code
 - **Arch Core Testing**: LiveData and ViewModel testing utilities
@@ -396,40 +398,22 @@ Comprehensive unit tests covering business logic across all layers:
 - Similar movies feature tests validating automatic loading
 
 **Current Test Coverage:**
-- Comprehensive unit tests across ViewModels, Use Cases, and Repositories
-- Mock-based testing with MockK for dependency isolation
+- Comprehensive unit tests across ViewModels, Use Cases, Repositories, and Utilities
+- Mock-based testing with MockK and Mockito for dependency isolation
 - Coroutine testing with proper dispatcher configuration
 - State management validation with Truth assertions
 
-### UI Testing
-Comprehensive UI testing using Espresso and Compose Testing:
+**Running Tests:**
+```bash
+# Run all unit tests
+./gradlew test
 
-**Test Coverage Areas:**
-- **Fragment-based Screens**: MovieListFragment UI tests with Espresso
-- **Compose Screens**: MovieDetailScreen, SimilarMoviesSection tests with Compose Testing
-- **User Interactions**: Clicks, scrolls, navigation flows
-- **Screen State Transitions**: Loading, error, content states
-- **Retry Button Functionality**: Both screens
-- **Similar Movies Navigation**: Recursive behavior
-- **Theme Switching**: Dark/light mode
-- **Accessibility Compliance**: TalkBack testing
+# Run tests with coverage report
+./gradlew testDebugUnitTest
 
-**Testing Libraries:**
-- **Espresso**: UI testing framework for Android
-- **Compose Testing**: Testing library for Jetpack Compose
-- **Hilt Testing**: Support for dependency injection in tests
-
-**Testing Best Practices:**
-- Page Object pattern for maintainable tests
-- Test fixtures and helper utilities for common setups
-- Comprehensive coverage of user flows and edge cases
-- Accessibility tests to ensure inclusive design
-
-**Current Test Coverage:**
-- Comprehensive UI tests for all major screens and user flows
-- Espresso tests for XML-based UI components
-- Compose Testing for Jetpack Compose screens
-- Accessibility compliance tests with TalkBack
+# Run specific test class
+./gradlew test --tests "MovieViewModelTest"
+```
 
 ## 🎨 UI/UX Design Principles
 
