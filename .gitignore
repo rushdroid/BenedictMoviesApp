@@ -164,6 +164,8 @@ $RECYCLE.BIN/
 *.sublime-project
 
 # JetBrains IDEs
+.idea/
+*.iml
 *.iws
 /.idea/caches/
 /.idea/libraries/
