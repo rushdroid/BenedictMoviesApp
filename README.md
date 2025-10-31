@@ -17,7 +17,7 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 
 ### Prerequisites
 - Android Studio Hedgehog (2023.1.1) or newer
-- JDK 17 or higher
+- JDK 8 or higher
 - Android SDK with minimum API 24 (Android 7.0)
 - TMDB API Key (free registration required)
 
@@ -42,7 +42,6 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
    ```kotlin
    buildConfigField("String", "TMDB_API_KEY", "\"your_actual_api_key_here\"")
    ```
-   - Update `build.gradle.kts` to read from properties
 
 4. **Sync and Build:**
    ```bash
@@ -377,7 +376,7 @@ app/
 Comprehensive unit tests covering business logic across all layers:
 
 **Test Coverage Areas:**
-- **ViewModel Tests**: State management and business logic validation (23 test cases)
+- **ViewModel Tests**: State management and business logic validation
 - **Use Case Tests**: Domain logic and business rules
 - **Repository Tests**: Data layer operations and error handling
 - **Mapper Tests**: Data transformation accuracy between layers
@@ -397,7 +396,7 @@ Comprehensive unit tests covering business logic across all layers:
 - Similar movies feature tests validating automatic loading
 
 **Current Test Coverage:**
-- 23 comprehensive unit tests across ViewModels, Use Cases, and Repositories
+- Comprehensive unit tests across ViewModels, Use Cases, and Repositories
 - Mock-based testing with MockK for dependency isolation
 - Coroutine testing with proper dispatcher configuration
 - State management validation with Truth assertions
