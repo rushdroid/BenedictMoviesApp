@@ -11,13 +11,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.rushdroid.benedictmovies.presentation.theme.BenedictMoviesTheme
 import com.rushdroid.benedictmovies.presentation.ui.compose.MovieDetailScreen
-import com.rushdroid.benedictmovies.presentation.viewmodel.MovieViewModel
+import com.rushdroid.benedictmovies.presentation.viewmodel.MovieDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MovieDetailActivity : ComponentActivity() {
 
-    private val viewModel: MovieViewModel by viewModels()
+    private val viewModel: MovieDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

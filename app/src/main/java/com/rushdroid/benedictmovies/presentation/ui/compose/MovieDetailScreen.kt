@@ -57,7 +57,7 @@ import com.rushdroid.benedictmovies.domain.model.Genre
 import com.rushdroid.benedictmovies.domain.model.Movie
 import com.rushdroid.benedictmovies.domain.model.MovieDetail
 import com.rushdroid.benedictmovies.presentation.theme.BenedictMoviesTheme
-import com.rushdroid.benedictmovies.presentation.viewmodel.MovieViewModel
+import com.rushdroid.benedictmovies.presentation.viewmodel.MovieDetailsViewModel
 
 /**
  * Compose screen displaying detailed information about a selected movie.
@@ -65,7 +65,7 @@ import com.rushdroid.benedictmovies.presentation.viewmodel.MovieViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailScreen(
-    viewModel: MovieViewModel,
+    viewModel: MovieDetailsViewModel,
     movieTitle: String,
     movieId: Int,
     onBackPressed: () -> Unit,

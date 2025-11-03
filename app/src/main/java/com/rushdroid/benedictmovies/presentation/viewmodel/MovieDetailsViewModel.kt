@@ -2,63 +2,35 @@ package com.rushdroid.benedictmovies.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rushdroid.benedictmovies.core.constants.Constants
 import com.rushdroid.benedictmovies.domain.model.Movie
 import com.rushdroid.benedictmovies.domain.model.MovieDetail
 import com.rushdroid.benedictmovies.domain.usecase.GetMovieDetailUseCase
-import com.rushdroid.benedictmovies.domain.usecase.GetMoviesUseCase
 import com.rushdroid.benedictmovies.domain.usecase.GetSimilarMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for managing movie data and UI state.
- * Handles both movie list and movie detail operations.
+ * ViewModel for managing movie detail data and UI state.
+ * Handles movie detail and similar movies operations.
  */
 @HiltViewModel
-class MovieViewModel @Inject constructor(
-    private val getMoviesUseCase: GetMoviesUseCase,
+class MovieDetailsViewModel @Inject constructor(
     private val getMovieDetailUseCase: GetMovieDetailUseCase,
     private val getSimilarMoviesUseCase: GetSimilarMoviesUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MovieUiState())
-    val uiState: StateFlow<MovieUiState> = _uiState
-        .onStart { loadBenedictCumberbatchMovies() }
+    private val _uiState = MutableStateFlow(MovieDetailsUiState())
+    val uiState: StateFlow<MovieDetailsUiState> = _uiState
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = MovieUiState()
+            initialValue = MovieDetailsUiState()
         )
-
-    /**
-     * Loads Benedict Cumberbatch's filmography from the API.
-     */
-    fun loadBenedictCumberbatchMovies() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
-            getMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID)
-                .onSuccess { movies ->
-                    _uiState.value = _uiState.value.copy(
-                        movies = movies,
-                        isLoading = false
-                    )
-                }
-                .onFailure { exception ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = exception.message
-                    )
-                }
-        }
-    }
 
     /**
      * Fetches detailed information for a specific movie.
@@ -113,21 +85,19 @@ class MovieViewModel @Inject constructor(
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null, detailError = null, similarError = null)
+        _uiState.value = _uiState.value.copy(detailError = null, similarError = null)
     }
 }
 
 /**
- * UI state holder for movie-related screens.
+ * UI state holder for movie details screen.
  */
-data class MovieUiState(
-    val movies: List<Movie> = emptyList(),
+data class MovieDetailsUiState(
     val selectedMovieDetail: MovieDetail? = null,
     val similarMovies: List<Movie> = emptyList(),
-    val isLoading: Boolean = false,
     val isLoadingDetail: Boolean = false,
     val isLoadingSimilar: Boolean = false,
-    val error: String? = null,
     val detailError: String? = null,
     val similarError: String? = null
 )
+
