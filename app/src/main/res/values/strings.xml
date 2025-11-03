@@ -45,4 +45,7 @@
     <string name="error_http_general">HTTP error: %1$d</string>
     <string name="error_unknown">An unknown error occurred</string>
     <string name="error_prefix">Error: %1$s</string>
+    <string name="error_no_movies_found">No movies found</string>
+    <string name="error_data_not_found">Data not found</string>
+    <string name="error_no_similar_movies">No similar movies found</string>
 </resources>

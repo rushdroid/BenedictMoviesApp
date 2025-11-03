@@ -1,7 +1,8 @@
 package com.rushdroid.benedictmovies.data.repository
 
-import com.rushdroid.benedictmovies.core.util.ErrorHandler
+import com.rushdroid.benedictmovies.R
 import com.rushdroid.benedictmovies.core.util.StringResourceProvider
+import com.rushdroid.benedictmovies.core.util.safeApiCall
 import com.rushdroid.benedictmovies.data.remote.api.MovieApiService
 import com.rushdroid.benedictmovies.data.mapper.toMovie
 import com.rushdroid.benedictmovies.data.mapper.toMovieDetail
@@ -21,32 +22,30 @@ class MovieRepositoryImpl @Inject constructor(
 ) : MovieRepository {
 
     override suspend fun getMoviesByPerson(personId: Int): Result<List<Movie>> {
-        return try {
+        return safeApiCall(
+            stringResourceProvider = stringResourceProvider,
+            validateNotEmpty = true
+        ) {
             val response = apiService.getMoviesByPerson(personId)
-            val movies = response.results.map { it.toMovie() }
-            Result.success(movies)
-        } catch (e: Exception) {
-            Result.failure(Exception(ErrorHandler.getErrorMessage(stringResourceProvider, e), e))
+            response.results.map { it.toMovie() }
         }
     }
 
     override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail> {
-        return try {
+        return safeApiCall(stringResourceProvider) {
             val response = apiService.getMovieDetail(movieId)
-            val movieDetail = response.toMovieDetail()
-            Result.success(movieDetail)
-        } catch (e: Exception) {
-            Result.failure(Exception(ErrorHandler.getErrorMessage(stringResourceProvider, e), e))
+            response.toMovieDetail()
         }
     }
 
     override suspend fun getSimilarMovies(movieId: Int): Result<List<Movie>> {
-        return try {
+        return safeApiCall(
+            stringResourceProvider = stringResourceProvider,
+            validateNotEmpty = true,
+            emptyMessage = stringResourceProvider.getString(R.string.error_no_similar_movies)
+        ) {
             val response = apiService.getSimilarMovies(movieId)
-            val movies = response.results.map { it.toMovie() }
-            Result.success(movies)
-        } catch (e: Exception) {
-            Result.failure(Exception(ErrorHandler.getErrorMessage(stringResourceProvider, e), e))
+            response.results.map { it.toMovie() }
         }
     }
 }

@@ -60,6 +60,8 @@ class MovieRepositoryImplTest {
     fun setup() {
         apiService = mockk()
         stringResourceProvider = mockk()
+        // Setup default mock behavior for string resource provider
+        every { stringResourceProvider.getString(any()) } returns "Mock error message"
         repository = MovieRepositoryImpl(apiService, stringResourceProvider)
     }
 
@@ -175,7 +177,7 @@ class MovieRepositoryImplTest {
     }
 
     @Test
-    fun `getSimilarMovies should return empty list when no similar movies found`() = runTest {
+    fun `getSimilarMovies should return failure when no similar movies found`() = runTest {
         // Given
         val emptyResponse = MovieResponseDto(
             page = 1,
@@ -184,13 +186,15 @@ class MovieRepositoryImplTest {
             totalResults = 0
         )
         coEvery { apiService.getSimilarMovies(testMovieId) } returns emptyResponse
+        // Mock the string resource provider to return the error message
+        every { stringResourceProvider.getString(any()) } returns "No similar movies found"
 
         // When
         val result = repository.getSimilarMovies(testMovieId)
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEmpty()
+        // Then - With safeApiCall validateNotEmpty, empty list returns failure
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("No similar movies found")
         coVerify(exactly = 1) { apiService.getSimilarMovies(testMovieId) }
     }
 
