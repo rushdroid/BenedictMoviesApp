@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +14,7 @@ import com.rushdroid.benedictmovies.R
 import com.rushdroid.benedictmovies.databinding.FragmentMovieListBinding
 import com.rushdroid.benedictmovies.presentation.ui.activity.MovieDetailActivity
 import com.rushdroid.benedictmovies.presentation.ui.adapter.MovieAdapter
-import com.rushdroid.benedictmovies.presentation.viewmodel.MovieViewModel
+import com.rushdroid.benedictmovies.presentation.viewmodel.MovieListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,7 +24,7 @@ class MovieListFragment : Fragment() {
     private var _binding: FragmentMovieListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MovieViewModel by viewModels()
+    private val viewModel: MovieListViewModel by viewModels()
     private lateinit var movieAdapter: MovieAdapter
     private var isGridLayout = false
 
