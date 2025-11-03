@@ -10,8 +10,10 @@ import com.rushdroid.benedictmovies.domain.usecase.GetMoviesUseCase
 import com.rushdroid.benedictmovies.domain.usecase.GetSimilarMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,11 +29,13 @@ class MovieViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MovieUiState())
-    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
-
-    init {
-        loadBenedictCumberbatchMovies()
-    }
+    val uiState: StateFlow<MovieUiState> = _uiState
+        .onStart { loadBenedictCumberbatchMovies() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = MovieUiState()
+        )
 
     /**
      * Loads Benedict Cumberbatch's filmography from the API.

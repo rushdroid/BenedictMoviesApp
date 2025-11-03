@@ -14,6 +14,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -62,6 +63,11 @@ class MovieViewModelTest {
 
         // When
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase,mockGetSimilarMoviesUseCase)
+
+        // Collect the flow to trigger onStart
+        val job = backgroundScope.launch {
+            viewModel.uiState.collect { }
+        }
         advanceUntilIdle()
 
         // Then
@@ -71,6 +77,8 @@ class MovieViewModelTest {
         assertThat(uiState.error).isNull()
 
         coVerify { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) }
+
+        job.cancel()
     }
 
     @Test
@@ -81,6 +89,11 @@ class MovieViewModelTest {
 
         // When
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase,mockGetSimilarMoviesUseCase)
+
+        // Collect the flow to trigger onStart
+        val job = backgroundScope.launch {
+            viewModel.uiState.collect { }
+        }
         advanceUntilIdle()
 
         // Then
@@ -88,6 +101,8 @@ class MovieViewModelTest {
         assertThat(uiState.movies).isEmpty()
         assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.error).isEqualTo(errorMessage)
+
+        job.cancel()
     }
 
     @Test
@@ -100,6 +115,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(emptyList())
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -113,6 +129,7 @@ class MovieViewModelTest {
         assertThat(uiState.detailError).isNull()
 
         coVerify { mockGetMovieDetailUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -123,7 +140,8 @@ class MovieViewModelTest {
         coEvery { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) } returns Result.success(emptyList())
         coEvery { mockGetMovieDetailUseCase(movieId) } returns Result.failure(RuntimeException(errorMessage))
 
-         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -135,6 +153,7 @@ class MovieViewModelTest {
         assertThat(uiState.selectedMovieDetail).isNull()
         assertThat(uiState.isLoadingDetail).isFalse()
         assertThat(uiState.detailError).isEqualTo(errorMessage)
+        job.cancel()
     }
 
     @Test
@@ -146,7 +165,8 @@ class MovieViewModelTest {
         coEvery { mockGetMovieDetailUseCase(movieId) } returns Result.success(createSampleMovieDetail())
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(emptyList())
 
-         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // Verify initial state
@@ -168,6 +188,7 @@ class MovieViewModelTest {
 
         // Verify the use case was called
         coVerify { mockGetMovieDetailUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -176,9 +197,11 @@ class MovieViewModelTest {
         coEvery { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) } returns Result.failure(RuntimeException("General error"))
         coEvery { mockGetMovieDetailUseCase(any()) } returns Result.failure(RuntimeException("Detail error"))
 
-         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
+        // First error is already set from init, now trigger detail error
         viewModel.loadMovieDetail(123)
         advanceUntilIdle()
 
@@ -189,11 +212,13 @@ class MovieViewModelTest {
 
         // When
         viewModel.clearError()
+        advanceUntilIdle()
 
         // Then
         val clearedState = viewModel.uiState.value
         assertThat(clearedState.error).isNull()
         assertThat(clearedState.detailError).isNull()
+        job.cancel()
     }
 
     @Test
@@ -210,7 +235,8 @@ class MovieViewModelTest {
             Result.success(reloadedMovies)
         )
 
-         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // Verify initial state
@@ -228,6 +254,7 @@ class MovieViewModelTest {
         assertThat(reloadedState.isLoading).isFalse()
 
         coVerify(exactly = 2) { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) }
+        job.cancel()
     }
 
     @Test
@@ -244,6 +271,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(any()) } returns Result.success(emptyList())
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -263,6 +291,7 @@ class MovieViewModelTest {
 
         coVerify { mockGetMovieDetailUseCase(movieId1) }
         coVerify { mockGetMovieDetailUseCase(movieId2) }
+        job.cancel()
     }
 
     // Similar Movies Tests
@@ -278,6 +307,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(similarMovies)
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -293,6 +323,7 @@ class MovieViewModelTest {
 
         coVerify { mockGetMovieDetailUseCase(movieId) }
         coVerify { mockGetSimilarMoviesUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -309,6 +340,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(similarMovies)
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -323,6 +355,7 @@ class MovieViewModelTest {
         assertThat(uiState.similarError).isNull()
 
         coVerify { mockGetSimilarMoviesUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -333,6 +366,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(emptyList())
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -346,6 +380,7 @@ class MovieViewModelTest {
         assertThat(uiState.similarError).isNull()
 
         coVerify { mockGetSimilarMoviesUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -357,6 +392,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.failure(RuntimeException(errorMessage))
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -370,6 +406,7 @@ class MovieViewModelTest {
         assertThat(uiState.similarError).isEqualTo(errorMessage)
 
         coVerify { mockGetSimilarMoviesUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -381,6 +418,7 @@ class MovieViewModelTest {
         coEvery { mockGetMovieDetailUseCase(movieId) } returns Result.failure(RuntimeException(errorMessage))
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When
@@ -395,6 +433,7 @@ class MovieViewModelTest {
 
         coVerify { mockGetMovieDetailUseCase(movieId) }
         coVerify(exactly = 0) { mockGetSimilarMoviesUseCase(any()) }
+        job.cancel()
     }
 
     @Test
@@ -406,6 +445,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.failure(RuntimeException("Similar movies error"))
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         viewModel.loadSimilarMovies(movieId)
@@ -418,12 +458,14 @@ class MovieViewModelTest {
 
         // When
         viewModel.clearError()
+        advanceUntilIdle()
 
         // Then
         val clearedState = viewModel.uiState.value
         assertThat(clearedState.error).isNull()
         assertThat(clearedState.detailError).isNull()
         assertThat(clearedState.similarError).isNull()
+        job.cancel()
     }
 
     @Test
@@ -439,6 +481,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId2) } returns Result.success(similarMovies2)
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When - Load similar movies for first movie
@@ -459,6 +502,7 @@ class MovieViewModelTest {
 
         coVerify { mockGetSimilarMoviesUseCase(movieId1) }
         coVerify { mockGetSimilarMoviesUseCase(movieId2) }
+        job.cancel()
     }
 
     // Retry Functionality Tests
@@ -475,6 +519,7 @@ class MovieViewModelTest {
         )
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // Verify initial error state
@@ -495,6 +540,7 @@ class MovieViewModelTest {
         assertThat(successState.isLoading).isFalse()
 
         coVerify(exactly = 2) { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) }
+        job.cancel()
     }
 
     @Test
@@ -514,6 +560,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId) } returns Result.success(emptyList())
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // First attempt - should fail
@@ -536,6 +583,7 @@ class MovieViewModelTest {
         assertThat(successState.isLoadingDetail).isFalse()
 
         coVerify(exactly = 2) { mockGetMovieDetailUseCase(movieId) }
+        job.cancel()
     }
 
     @Test
@@ -551,6 +599,7 @@ class MovieViewModelTest {
         )
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // First failure
@@ -574,6 +623,7 @@ class MovieViewModelTest {
         assertThat(finalState.movies).isEqualTo(expectedMovies)
 
         coVerify(exactly = 3) { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) }
+        job.cancel()
     }
 
     @Test
@@ -582,12 +632,14 @@ class MovieViewModelTest {
         coEvery { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) } returns Result.failure(RuntimeException("Error"))
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.error).isNotNull()
 
         // When - Only clear error without reloading
         viewModel.clearError()
+        advanceUntilIdle()
 
         // Then - Error should be cleared but no additional API call
         val state = viewModel.uiState.value
@@ -597,6 +649,7 @@ class MovieViewModelTest {
 
         // Verify only initial load was attempted
         coVerify(exactly = 1) { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) }
+        job.cancel()
     }
 
     @Test
@@ -604,7 +657,6 @@ class MovieViewModelTest {
         // Given
         val movieId1 = 123
         val movieId2 = 456
-        val movieDetail1 = createSampleMovieDetail(movieId1, "Movie 1")
         val movieDetail2 = createSampleMovieDetail(movieId2, "Movie 2")
 
         coEvery { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) } returns Result.success(emptyList())
@@ -613,6 +665,7 @@ class MovieViewModelTest {
         coEvery { mockGetSimilarMoviesUseCase(movieId2) } returns Result.success(emptyList())
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // First attempt with movieId1 - fails
@@ -634,6 +687,7 @@ class MovieViewModelTest {
 
         coVerify { mockGetMovieDetailUseCase(movieId1) }
         coVerify { mockGetMovieDetailUseCase(movieId2) }
+        job.cancel()
     }
 
     @Test
@@ -643,6 +697,7 @@ class MovieViewModelTest {
         coEvery { mockGetMoviesUseCase(Constants.BENEDICT_CUMBERBATCH_ID) } returns Result.failure(RuntimeException(errorMessage))
 
         viewModel = MovieViewModel(mockGetMoviesUseCase, mockGetMovieDetailUseCase, mockGetSimilarMoviesUseCase)
+        val job = backgroundScope.launch { viewModel.uiState.collect { } }
         advanceUntilIdle()
 
         // When - Error occurs
@@ -656,10 +711,12 @@ class MovieViewModelTest {
 
         // When - Clear error
         viewModel.clearError()
+        advanceUntilIdle()
 
         // Then - Error should be cleared
         val clearedState = viewModel.uiState.value
         assertThat(clearedState.error).isNull()
+        job.cancel()
     }
 
     // Helper methods for creating sample data
