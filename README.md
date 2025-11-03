@@ -33,15 +33,27 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
    - Register for a free account at [The Movie Database](https://www.themoviedb.org/)
    - Navigate to Settings → API → Request API Key
    - Choose "Developer" option and fill in the required information
-   - Copy your API v3 key
+   - Copy your API key
 
 3. **Configure API Key:**
 
-   - Open `app/build.gradle.kts`
-   - Replace the placeholder API key in the `buildConfigField` with your actual key:
-   ```kotlin
-   buildConfigField("String", "TMDB_API_KEY", "\"your_actual_api_key_here\"")
+   **⚠️ Important: Keep your API key secure!**
+   
+   The API key is stored in `local.properties` which is **git-ignored** and will not be committed to the repository.
+
+   - Copy the example file:
+   ```bash
+   cp local.properties.example local.properties
    ```
+   
+   - Open `local.properties` and add your TMDB API key:
+   ```properties
+   TMDB_API_KEY=your_actual_api_key_here
+   ```
+   
+   - The build system will automatically read the key from `local.properties`
+   - Never commit `local.properties` to version control
+   - Each developer should have their own `local.properties` with their own API key
 
 4. **Sync and Build:**
    ```bash
@@ -361,12 +373,26 @@ app/
 │   │   │       │   ├── compose/          # Jetpack Compose screens
 │   │   │       │   └── fragment/         # XML Fragments (legacy UI)
 │   │   │       └── viewmodel/            # ViewModels (state management)
+│   │   │           ├── MovieViewModel.kt           # Main movie list ViewModel
+│   │   │           └── MovieDetailsViewModel.kt    # Movie details ViewModel
 │   │   └── res/                          # Android resources
 │   ├── test/                            # Unit tests (business logic)
-│   │   ├── data/repository/             # Repository tests
-│   │   ├── domain/usecase/              # Use case tests
-│   │   └── presentation/viewmodel/      # ViewModel tests
+│   │   └── java/com/rushdroid/benedictmovies/
+│   │       ├── data/
+│   │       │   ├── mapper/              # Mapper tests
+│   │       │   └── repository/          # Repository tests
+│   │       ├── domain/
+│   │       │   └── usecase/             # Use case tests
+│   │       │       ├── GetMovieDetailUseCaseTest.kt
+│   │       │       ├── GetMoviesUseCaseTest.kt
+│   │       │       └── GetSimilarMoviesUseCaseTest.kt
+│   │       └── presentation/
+│   │           └── viewmodel/           # ViewModel tests
+│   │               ├── MovieViewModelTest.kt
+│   │               └── MovieDetailsViewModelTest.kt
 │   └── androidTest/                     # Instrumented tests (UI tests)
+├── local.properties                     # Local config (API keys, git-ignored)
+├── local.properties.example             # Template for local.properties
 └── build.gradle.kts                     # Module dependencies
 ```
 
