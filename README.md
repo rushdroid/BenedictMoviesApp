@@ -10,13 +10,11 @@ A modern Android application showcasing Benedict Cumberbatch's filmography, buil
 - **Retry Mechanism**: User-friendly error handling with retry buttons on both screens
 - **Modern UI**: Built with Jetpack Compose and Material Design 3
 - **Error Handling**: Robust error handling with clear user feedback and retry options
-
-https://github.com/user-attachments/assets/0747ae35-7e00-4d64-b65b-eb47c9383d3e
-
-
 - **Dark/Light Theme**: Full theme support with system preference detection
 - **Clean Architecture**: Separation of concerns with domain, data, and presentation layers
 
+
+https://github.com/user-attachments/assets/0747ae35-7e00-4d64-b65b-eb47c9383d3e
 
 
 ## 🚀 Setup Instructions
