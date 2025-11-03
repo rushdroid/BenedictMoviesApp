@@ -1,0 +1,6 @@
+## This file is a template for local.properties
+# Copy this file to local.properties and add your actual API keys
+# local.properties is git-ignored and will not be committed
+
+# TMDB API Key - Get yours from https://www.themoviedb.org/settings/api
+TMDB_API_KEY=your_tmdb_api_key_here

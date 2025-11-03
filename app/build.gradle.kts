@@ -18,13 +18,19 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Add BuildConfig field for API key
-        buildConfigField("String", "TMDB_API_KEY", "\"a3bf18e5da2c46d09804dcb4585b6720\"")
+        // Read API key from local.properties
+        val localProperties = org.jetbrains.kotlin.konan.properties.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY") ?: ""
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
     }
 
     buildTypes {
         debug {
-            buildConfigField("String", "TMDB_API_KEY", "\"a3bf18e5da2c46d09804dcb4585b6720\"")
+            // Inherits from defaultConfig
         }
         release {
             isMinifyEnabled = false
@@ -32,7 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "TMDB_API_KEY", "\"your_tmdb_api_key_here\"")
+            // Inherits from defaultConfig
         }
     }
     compileOptions {
